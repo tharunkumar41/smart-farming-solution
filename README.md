@@ -51,19 +51,33 @@ PORT=3000
 
 1. Run the Flask backend
    
-    cd backend/ml_models
-   
+    cd backend/ml_models   
     python ml_api.py
    
 3. Run the Node.js Server
    
-    cd backend
-   
+    cd backend   
     node server.js
    
 5. For Flutter frontend
    
-    cd smart_farm
-   
+    cd smart_farm   
     flutter run
 
+# Output Interface Screenshots
+
+![WebInterface Output](screenshots/Picture1.png)
+![WebInterface Output](screenshots/Picture2.png)
+![WebInterface Output](screenshots/Picture3.png)
+![WebInterface Output](screenshots/Picture4.png)
+![WebInterface Output](screenshots/Picture5.png)
+![WebInterface Output](screenshots/Picture6.png)
+![WebInterface Output](screenshots/Picture7.png)
+![WebInterface Output](screenshots/Picture8.png)
+![WebInterface Output](screenshots/Picture9.png)
+![WebInterface Output](screenshots/Picture10.png)
+![WebInterface Output](screenshots/Picture11.png)
+![WebInterface Output](screenshots/Picture12.png)
+![WebInterface Output](screenshots/Picture13.png)
+![WebInterface Output](screenshots/Picture14.png)
+![WebInterface Output](screenshots/Picture15.png)
