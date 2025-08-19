@@ -1,0 +1,192 @@
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background-color: #fff;
+}
+
+body {
+  background-color: #f9fdf7;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+header {
+  background-color: #2e7d32;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  font-weight: 700;
+  font-size: 2rem; /* slightly larger */
+}
+
+nav a {
+  color: #a5d6a7;
+  text-decoration: none;
+  margin-right: 15px;
+  font-weight: 600;
+  transition: color 0.3s ease;
+  font-size: 1.1rem; /* slightly larger */
+}
+
+nav a:hover {
+  color: #c8e6c9;
+}
+
+main {
+  background-color: white;
+  padding: 25px 30px; /* increased padding */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.15);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+h1, h2 {
+  margin-bottom: 20px;
+  color: #2e7d32;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.8rem;
+}
+
+main > section {
+  margin-bottom: 40px;
+}
+
+ul {
+  font-size: 1.1rem;
+  margin-left: 20px;
+  margin-bottom: 25px;
+}
+
+ul li {
+  margin-bottom: 10px;
+}
+
+form {
+  margin-bottom: 30px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border: 1.5px solid #a5d6a7;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #2e7d32;
+  outline: none;
+}
+
+button {
+  background-color: #2e7d32;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #1b4d1b;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #a5d6a7;
+  text-align: left;
+}
+
+th {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+  font-weight: 700;
+}
+
+tr:hover {
+  background-color: #e6f2e6;
+}
+
+#message {
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+a {
+  color: #2e7d32;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Chart container styles - do not override Plotly or canvas styles */
+.chart-container {
+  width: 90%;
+  min-height: 320px;
+  margin: 40px auto;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Canvas charts */
+canvas {
+  display: block;
+  margin: 25px auto;
+  max-width: 100%;
+  height: auto !important;
+}
+
+@media (min-width: 768px) {
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+}

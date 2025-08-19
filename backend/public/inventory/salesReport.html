@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sales Report</title>
+  <link rel="stylesheet" href="css/salesReport.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <!-- Side Panel -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <i class="fas fa-warehouse"></i>
+      <span>Farm Inventory</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" ><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="product.html"><i class="fas fa-box-open"></i> Products</a>
+      <a href="category.html"><i class="fas fa-tags"></i> Categories</a>
+      <a href="customer.html"><i class="fas fa-users"></i> Customers</a>
+      <a href="sales.html"><i class="fas fa-cart-plus"></i> Add Sale</a>
+      <a href="salesReport.html"class="active"><i class="fas fa-chart-line"></i> Sales Report</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <header class="main-header">
+      <h1>Sales Report</h1>
+    </header>
+
+    <section>
+      <h2>View Sales Report</h2>
+      <label for="reportType">Report Type:</label>
+      <select id="reportType">
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+      </select>
+      <button id="loadReport">Load Report</button>
+      <button id="exportExcel">Export to Excel</button>
+    </section>
+    <section>
+      <h2>Sales Data</h2>
+      <table id="salesTable" border="0">
+        <thead>
+          <tr>
+            <th>Product</th><th>Quantity</th><th>Customer</th><th>Date</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+  <script>
+    const apiBase = '/api/inventory';
+
+    async function fetchSales(reportType) {
+      const res = await fetch(apiBase + '/sales/report/' + reportType);
+      const sales = await res.json();
+      const tbody = document.querySelector('#salesTable tbody');
+      tbody.innerHTML = '';
+      sales.forEach(sale => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${sale.prdID ? sale.prdID.productName : ''}</td>
+          <td>${sale.quantity}</td>
+          <td>${sale.customer ? sale.customer.fullName : ''}</td>
+          <td>${new Date(sale.date).toLocaleDateString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('loadReport').addEventListener('click', () => {
+      const reportType = document.getElementById('reportType').value;
+      fetchSales(reportType);
+    });
+
+    // Load daily report by default
+    fetchSales('daily');
+
+    document.getElementById('exportExcel').addEventListener('click', () => {
+      const table = document.getElementById('salesTable');
+      const wb = XLSX.utils.table_to_book(table, { sheet: "Sales Report" });
+      XLSX.writeFile(wb, 'sales_report.xlsx');
+    });
+  </script>
+</body>
+</html>

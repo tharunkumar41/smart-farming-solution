@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Farm Inventory Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+  <!-- SIDE PANEL -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <i class="fas fa-warehouse"></i>
+      <span>Farm Inventory</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="product.html"><i class="fas fa-box-open"></i> Products</a>
+      <a href="category.html"><i class="fas fa-tags"></i> Categories</a>
+      <a href="customer.html"><i class="fas fa-users"></i> Customers</a>
+      <a href="sales.html"><i class="fas fa-cart-plus"></i> Add Sale</a>
+      <a href="salesReport.html"><i class="fas fa-chart-line"></i> Sales Report</a>
+      <a href="../index.html"><i class="fas fa-seedling"></i>Back to HomePage</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <header class="page-header">
+      <h1>Inventory Dashboard</h1>
+    </header>
+
+    <!-- OVERVIEW CARDS -->
+    <section class="overview-cards">
+      <div class="card">
+        <h3>Total Products</h3>
+        <p id="totalProducts">Loading…</p>
+      </div>
+      <div class="card">
+        <h3>Total Categories</h3>
+        <p id="totalCategories">Loading…</p>
+      </div>
+      <div class="card">
+        <h3>Total Customers</h3>
+        <p id="totalCustomers">Loading…</p>
+      </div>
+      <div class="card">
+        <h3>Total Sales</h3>
+        <p id="totalSales">Loading…</p>
+      </div>
+    </section>
+
+    <!-- CHARTS GRID -->
+    <section class="charts-grid">
+      <div id="chart1" class="chart-card"></div>
+      <div id="chart2" class="chart-card"></div>
+      <div id="chart4" class="chart-card"></div>
+      <div id="chart5" class="chart-card"></div>
+    </section>
+  </div>
+
+  <!-- your existing scripts below… -->
+  <script>
+    const apiBase = "/api/inventory";
+
+    async function fetchOverview() {
+      const res = await fetch(apiBase + "/dashboard/overview");
+      if (res.ok) {
+        const data = await res.json();
+        document.getElementById("totalProducts").textContent = data.totalProducts;
+        document.getElementById("totalCategories").textContent = data.totalCategories;
+        document.getElementById("totalCustomers").textContent = data.totalCustomers;
+        document.getElementById("totalSales").textContent = data.totalSales;
+        fetchSalesData();
+      } else {
+        ["totalProducts", "totalCategories", "totalCustomers", "totalSales"].forEach(
+          (id) => (document.getElementById(id).textContent = "Error")
+        );
+      }
+    }
+
+    async function fetchSalesData() {
+      const res = await fetch(apiBase + "/dashboard/sales-data");
+      if (!res.ok) return console.error("Failed to fetch sales data");
+      const data = await res.json();
+      renderDashboard(data);
+    }
+
+    function renderDashboard(data) {
+      // group‐by helper
+      const groupBy = (arr, key) =>
+        arr.reduce((acc, obj) => {
+          acc[obj[key]] = (acc[obj[key]] || 0) + Number(obj.Quantity);
+          return acc;
+        }, {});
+
+      // Total Sales by Product
+      const productSales = groupBy(data, "Product");
+      Plotly.newPlot(
+        "chart1",
+        [
+          {
+            x: Object.keys(productSales),
+            y: Object.values(productSales),
+            type: "bar",
+            marker: { color: "#FFA726" },
+          },
+        ],
+        {
+          title: "Total Sales by Product",
+          xaxis: { title: "Product" },
+          yaxis: { title: "Quantity Sold" },
+        }
+      );
+
+      // Sales Volume by Customer
+      const customerSales = groupBy(data, "Customer");
+      Plotly.newPlot(
+        "chart2",
+        [
+          {
+            x: Object.keys(customerSales),
+            y: Object.values(customerSales),
+            type: "bar",
+            marker: { color: "#26A69A" },
+          },
+        ],
+        {
+          title: "Sales Volume by Customer",
+          xaxis: { title: "Customer" },
+          yaxis: { title: "Quantity Sold" },
+        }
+      );
+
+      // Product-Customer Heatmap
+      const productCustomerMap = {};
+      data.forEach(({ Product, Customer, Quantity }) => {
+        productCustomerMap[Product] = productCustomerMap[Product] || {};
+        productCustomerMap[Product][Customer] =
+          (productCustomerMap[Product][Customer] || 0) + Number(Quantity);
+      });
+      const products = Object.keys(productCustomerMap);
+      const customers = Array.from(new Set(data.map((d) => d.Customer)));
+      const z = products.map((p) => customers.map((c) => productCustomerMap[p][c] || 0));
+      Plotly.newPlot(
+        "chart4",
+        [{ z, x: customers, y: products, type: "heatmap", colorscale: "Viridis" }],
+        { title: "Product-Customer Heatmap", xaxis: { title: "Customer" }, yaxis: { title: "Product" } }
+      );
+
+      // Sales Distribution Boxplots
+      const productQuantities = {};
+      data.forEach(({ Product, Quantity }) => {
+        productQuantities[Product] = productQuantities[Product] || [];
+        productQuantities[Product].push(Number(Quantity));
+      });
+      const traces = Object.entries(productQuantities).map(([prod, vals]) => ({
+        y: vals,
+        name: prod,
+        type: "box",
+      }));
+      Plotly.newPlot(
+        "chart5",
+        traces,
+        {
+          title: "Sales Distribution per Transaction",
+          yaxis: { title: "Quantity" },
+          boxmode: "group",
+        }
+      );
+    }
+
+    // initialize
+    fetchOverview();
+  </script>
+</body>
+
+</html>

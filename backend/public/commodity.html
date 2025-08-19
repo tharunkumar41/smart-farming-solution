@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Farming Solutions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
+<link rel="stylesheet" href="css/com_styles.css">
+</head>
+<body>
+
+  <!-- Side Panel -->
+  <div class="sidebar">
+    <div>
+        <div style="display: flex; align-items: center;">
+            <img src="https://img.icons8.com/color/48/000000/wheat.png" alt="Logo" class="logo">
+            <span class="project-name">Crop Price Trends</span>
+        </div>
+
+        <div class="nav-item">
+            <a href="/crop-recommendation"><i class="fas fa-seedling"></i>&nbsp; Crop Recommendation</a>
+        </div>
+        <div class="nav-item">
+            <a href="/fertilizer-recommendation"><i class="fas fa-flask"></i>&nbsp; Fertilizer Recommendation</a>
+        </div>
+        <div class="nav-item">
+            <a href="/inventory/login.html"><i class="fas fa-boxes"></i>&nbsp; Inventory Management</a>
+        </div>
+        <div class="nav-item">
+            <a href="index.html"><i class="fas fa-boxes"></i>&nbsp; Back To HomePage</a>
+        </div>
+    </div>
+
+    <div style="font-size: 0.8rem; color: #ccc;">
+        &copy; 2025 SmartFarming
+    </div>
+</div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <h2 id="crop-name" class="header"></h2>
+
+    <div class="row">
+      <div class="col s12 m7">
+        <div class="card horizontal medium">
+          <div class="card-image">
+            <img id="crop-image" alt="Crop Image">
+          </div>
+          <div class="card-stacked">
+            <div class="card-content">
+              <table>
+                <tr><td>Current Price</td><td><b id="current-price"></b></td></tr>
+                <tr><td>Prime Location</td><td><b id="prime-loc"></b></td></tr>
+                <tr><td>Crop Type</td><td><b id="type-c"></b></td></tr>
+                <tr><td>Export</td><td><b id="export"></b></td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col s12 m5">
+        <div class="card grey darken-3">
+          <div class="card-content white-text">
+            <span class="card-title">Brief Forecast</span>
+            <table>
+              <tr><td>Min. crop price time</td><td><h5 id="min-time"></h5></td><td><h4 id="min-price"></h4></td></tr>
+              <tr><td>Max. crop price time</td><td><h5 id="max-time"></h5></td><td><h4 id="max-price"></h4></td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col s12">
+        <h5>Forecast Trends</h5>
+        <table>
+          <thead>
+            <tr><th>Month</th><th>Price (per Qtl.)</th><th>Change</th></tr>
+          </thead>
+          <tbody id="forecast-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col s12">
+        <h5>Forecast Price Trend</h5>
+        <div class="chart-container">
+          <canvas id="chartjs-forecast"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:50px;">
+      <div class="col s12">
+        <h5>Previous Year Price Trend</h5>
+        <div class="chart-container">
+          <canvas id="chartjs-previous"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const name = urlParams.get("name");
+
+      const commodities = [
+        "bajra", "barley", "jowar", "maize", "paddy", "ragi", "wheat",
+        "betelnut_arceanut", "black_pepper", "cardamom", "chillies_dry",
+        "coriander", "cumin", "garlic", "ginger_dry", "tamarind", "turmeric",
+        "coir_fibre", "mesta", "raw_cotton", "raw_jute", "raw_silk", "raw_wool",
+        "jasmine", "marigold", "rose", "almonds", "amla", "apple", "banana",
+        "cashew_nut", "coconut_fresh", "grapes", "guava", "jackfruit", "lemon",
+        "sweet_orange", "orange", "papaya", "pear", "pineapple", "pomengranate",
+        "sapota", "walnut", "fodder", "gaur_seed", "industrial_wood", "raw_rubber",
+        "tobacco", "castor_seed", "copra_coconut", "cotton_seed",
+        "gingelly_seed_sesamum", "groundnut_seed", "linseed", "niger_seed",
+        "rape_mustard_seed", "safflower_kardi_seed", "soyabean", "sunflower",
+        "betel_leaves", "coffee", "honey", "sugarcane", "tea", "arhar", "gram",
+        "masur", "moong", "peas_chawali", "rajma", "urad", "cotton_yarn",
+        "woollen_yarn", "beans", "bittergourd", "bottlegourd", "brinjal", "cabbage",
+        "carrot", "cauliflower", "cucumber", "drumstick", "gingerfresh",
+        "ladyfinger", "onion", "peasgreen", "pointedgourd", "potato", "pumpkin",
+        "radish", "sweetpotato", "tapioca", "tomato"
+      ]; 
+
+      if (!name || !commodities.includes(name)) {
+        alert("Invalid or missing commodity.");
+        return;
+      }
+
+      fetchCommodityData(name);
+
+      async function fetchCommodityData(name) {
+        try {
+          const response = await axios.get(`http://localhost:3000/api/commodity/${name}`);
+          const data = response.data;
+
+          document.getElementById("crop-name").innerText = data.name;
+          document.getElementById("crop-image").src = data.image_url;
+          document.getElementById("current-price").innerText = `₹ ${data.current_price} / ql`;
+          document.getElementById("prime-loc").innerText = data.prime_loc;
+          document.getElementById("type-c").innerText = data.type_c;
+          document.getElementById("export").innerText = data.export;
+          document.getElementById("min-time").innerText = data.min_crop[0];
+          document.getElementById("min-price").innerText = `₹${data.min_crop[1]}`;
+          document.getElementById("max-time").innerText = data.max_crop[0];
+          document.getElementById("max-price").innerText = `₹${data.max_crop[1]}`;
+
+          const forecastTable = document.getElementById("forecast-table");
+          forecastTable.innerHTML = "";
+          data.forecast_values.forEach(item => {
+            const row = `<tr>
+              <td>${item[0]}</td>
+              <td>₹${item[1]}</td>
+              <td class="valign-wrapper">
+                ${item[2]}% 
+                <img src="${item[2] >= 0 ? '/static/images/gain-icon.png' : '/static/images/loss-icon.png'}" height="25" width="25">
+              </td>
+            </tr>`;
+            forecastTable.innerHTML += row;
+          });
+
+          const forecast_x = data.forecast_values.map(item => item[0]);
+          const forecast_y = data.forecast_values.map(item => item[1]);
+          const previous_x = data.previous_values.map(item => item[0]);
+          const previous_y = data.previous_values.map(item => item[1]);
+
+          new Chart(document.getElementById("chartjs-forecast").getContext("2d"), {
+            type: "line",
+            data: {
+              labels: forecast_x,
+              datasets: [{
+                label: "Next Year Price",
+                data: forecast_y,
+                fill: false,
+                borderColor: "rgb(76, 175, 80)",
+                lineTension: 0.1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false
+            }
+          });
+
+          new Chart(document.getElementById("chartjs-previous").getContext("2d"), {
+            type: "line",
+            data: {
+              labels: previous_x,
+              datasets: [{
+                label: "Previous Year Price",
+                data: previous_y,
+                fill: false,
+                borderColor: "rgb(139, 195, 74)",
+                lineTension: 0.1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false
+            }
+          });
+
+        } catch (error) {
+          console.error("Error fetching commodity data:", error);
+        }
+      }
+    });
+  </script>
+
+  <!-- Materialize JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>

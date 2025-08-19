@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add Sale</title>
+  <link rel="stylesheet" href="css/sales.css" />  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <!-- Side Panel -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <i class="fas fa-warehouse"></i>
+      <span>Farm Inventory</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" ><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="product.html"><i class="fas fa-box-open"></i> Products</a>
+      <a href="category.html"><i class="fas fa-tags"></i> Categories</a>
+      <a href="customer.html"><i class="fas fa-users"></i> Customers</a>
+      <a href="sales.html"class="active"><i class="fas fa-cart-plus"></i> Add Sale</a>
+      <a href="salesReport.html"><i class="fas fa-chart-line"></i> Sales Report</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <header class="main-header">
+      <h1>Add Sale</h1>
+    </header>
+
+    <section>
+      <h2>Add Sale</h2>
+      <form id="addSaleForm">
+        <label for="prdID">Product:</label>
+        <select id="prdID" name="prdID" required></select>
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" required min="1" />
+        <label for="customer">Customer:</label>
+        <select id="customer" name="customer" required></select>
+        <button type="submit">Add Sale</button>
+      </form>
+    </section>
+    <section>
+      <h2>Sales List</h2>
+      <table id="salesTable" border="0">
+        <thead>
+          <tr>
+            <th>Product</th><th>Quantity</th><th>Customer</th><th>Date</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+  <script>
+    const apiBase = '/api/inventory';
+
+    async function fetchProducts() {
+      const res = await fetch(apiBase + '/products');
+      const products = await res.json();
+      const select = document.getElementById('prdID');
+      select.innerHTML = '';
+      products.forEach(prod => {
+        const option = document.createElement('option');
+        option.value = prod._id;
+        option.textContent = prod.productName;
+        select.appendChild(option);
+      });
+    }
+
+    async function fetchCustomers() {
+      const res = await fetch(apiBase + '/customers');
+      const customers = await res.json();
+      const select = document.getElementById('customer');
+      select.innerHTML = '';
+      customers.forEach(cust => {
+        const option = document.createElement('option');
+        option.value = cust._id;
+        option.textContent = cust.fullName;
+        select.appendChild(option);
+      });
+    }
+
+    async function fetchSales() {
+      const res = await fetch(apiBase + '/sales');
+      const salesItems = await res.json();
+      const tbody = document.querySelector('#salesTable tbody');
+      tbody.innerHTML = '';
+      salesItems.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.prdID ? item.prdID.productName : ''}</td>
+          <td>${item.quantity}</td>
+          <td>${item.customer ? item.customer.fullName : ''}</td>
+          <td>${new Date(item.date).toLocaleDateString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('addSaleForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const prdID = e.target.prdID.value;
+      const quantity = parseInt(e.target.quantity.value);
+      const customer = e.target.customer.value;
+
+      const res = await fetch(apiBase + '/sales', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prdID, quantity, customer })
+      });
+      if (res.ok) {
+        e.target.reset();
+        fetchSales();
+      } else {
+        const data = await res.json();
+        alert(data.message || 'Failed to add sale');
+      }
+    });
+
+    // Initialize
+    fetchProducts();
+    fetchCustomers();
+    fetchSales();
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Customers</title>
+  <link rel="stylesheet" href="css/customer.css">  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <!-- Side Panel -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <i class="fas fa-warehouse"></i>
+      <span>Farm Inventory</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" ><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="product.html"><i class="fas fa-box-open"></i> Products</a>
+      <a href="category.html"><i class="fas fa-tags"></i> Categories</a>
+      <a href="customer.html" class="active"><i class="fas fa-users"></i> Customers</a>
+      <a href="sales.html"><i class="fas fa-cart-plus"></i> Add Sale</a>
+      <a href="salesReport.html"><i class="fas fa-chart-line"></i> Sales Report</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <header class="main-header">
+      <h1>Manage Customers</h1>
+    </header>
+
+    <section>
+      <h2>Add New Customer</h2>
+      <form id="addCustomerForm">
+        <div>
+          <label for="fullName">Full Name:</label>
+          <input type="text" id="fullName" name="fullName" required />
+        </div>
+        <div>
+          <label for="phoneNo">Phone Number:</label>
+          <input type="text" id="phoneNo" name="phoneNo" required />
+        </div>
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div>
+          <label for="address">Address:</label>
+          <textarea id="address" name="address" required></textarea>
+        </div>
+        <button type="submit">Add Customer</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Customer List</h2>
+      <table id="customerTable">
+        <thead>
+          <tr>
+            <th>Full Name</th>
+            <th>Phone Number</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const apiBase = '/api/inventory';
+
+    async function fetchCustomers() {
+      const res = await fetch(apiBase + '/customers');
+      const customers = await res.json();
+      const tbody = document.querySelector('#customerTable tbody');
+      tbody.innerHTML = '';
+      customers.forEach(cust => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${cust.fullName}</td>
+          <td>${cust.phoneNo}</td>
+          <td>${cust.email}</td>
+          <td>${cust.address}</td>
+          <td>
+            <button class="action-btn delete-btn" onclick="deleteCustomer('${cust._id}')">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function deleteCustomer(id) {
+      if (!confirm('Are you sure you want to delete this customer?')) return;
+      await fetch(apiBase + '/customers/' + id, { method: 'DELETE' });
+      fetchCustomers();
+    }
+
+    document.getElementById('addCustomerForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const fullName = e.target.fullName.value;
+      const phoneNo = e.target.phoneNo.value;
+      const email = e.target.email.value;
+      const address = e.target.address.value;
+
+      await fetch(apiBase + '/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullName, phoneNo, email, address })
+      });
+      e.target.reset();
+      fetchCustomers();
+    });
+
+    // Initialize
+    fetchCustomers();
+  </script>
+</body>
+</html>

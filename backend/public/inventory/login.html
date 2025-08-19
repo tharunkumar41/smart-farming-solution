@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - Farm Inventory Management</title>
+  <link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+  <main>
+    <h1>Login</h1>
+    <form id="loginForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required />
+      
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+      
+      <button type="submit">Login</button>
+    </form>
+    <div id="message"></div>
+    <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+  </main>
+
+  <script>
+    // The exact login URL as mounted in server.js
+    const LOGIN_URL = '/api/inventory/auth/login';
+
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const msgDiv = document.getElementById('message');
+      msgDiv.textContent = '';  // clear previous messages
+
+      const username = e.target.username.value.trim();
+      const password = e.target.password.value.trim();
+
+      try {
+        const res = await fetch(LOGIN_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        // If the response isn't JSON (HTML error page), read it as text
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          const text = await res.text();
+          console.error('Non‑JSON response from server:', text);
+          throw new Error('Unexpected server response. See console.');
+        }
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          // Show the error message from the server
+          msgDiv.textContent = data.message || 'Login failed';
+          msgDiv.style.color = 'red';
+          return;
+        }
+
+        // Success! Save the token and redirect to the static dashboard
+        localStorage.setItem('token', data.token);
+        window.location.href = '/inventory/dashboard.html';
+
+      } catch (err) {
+        console.error('Login error:', err);
+        msgDiv.textContent = err.message || 'An error occurred. Try again.';
+        msgDiv.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>

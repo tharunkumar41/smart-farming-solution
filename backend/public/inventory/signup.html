@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign Up - Farm Inventory Management</title>
+  <link rel="stylesheet" href="css/signup.css" />
+</head>
+<body>
+  <main>
+    <h1>Sign Up</h1>
+    <form id="signupForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required />
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+      <button type="submit">Sign Up</button>
+    </form>
+    <div id="message"></div>
+    <p>Already have an account? <a href="login.html">Login here</a></p>
+  </main>
+  <script>
+    const apiBase = '/api/inventory';
+
+    document.getElementById('signupForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const username = e.target.username.value;
+      const password = e.target.password.value;
+
+      const res = await fetch(apiBase + '/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      const messageDiv = document.getElementById('message');
+      if (res.ok) {
+        messageDiv.textContent = 'User created successfully. You can now login.';
+        messageDiv.style.color = 'green';
+        e.target.reset();
+      } else {
+        messageDiv.textContent = data.message || 'Signup failed';
+        messageDiv.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>

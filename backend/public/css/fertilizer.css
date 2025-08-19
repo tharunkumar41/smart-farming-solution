@@ -1,0 +1,103 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 220px;
+  background-color: #f4faf4;
+  border-right: 1px solid #e0e0e0;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.sidebar h2 {
+  font-size: 20px;
+  color: #2e7d32;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar h2 i {
+  margin-right: 10px;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #2e7d32;
+  font-size: 16px;
+  margin: 10px 0;
+  transition: color 0.3s;
+}
+
+.sidebar a i {
+  margin-right: 10px;
+}
+
+.sidebar a:hover {
+  color: #4CAF50;
+}
+
+  /* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    max-width: 500px;
+    margin-top: 30px;
+  }
+  
+  form label {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  form input[type="number"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+  }
+  
+  form input[type="number"]:focus {
+    border-color: #4CAF50;
+    outline: none;
+  }
+  
+  button[type="submit"] {
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #43a047;
+  }
+  
+  /* Result display */
+  #result {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    color: #2e7d32;
+    font-weight: 500;
+  }
+  .container {
+    margin-left: 260px; /* Account for sidebar */
+    padding: 40px;
+    background-color: #f9fdf9;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+  }
+    

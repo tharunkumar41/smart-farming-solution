@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Farming Solution</title>
+    <link rel="stylesheet" href="css/index_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Side Panel -->
+    <div class="sidebar" style="display: flex; flex-direction: column; justify-content: space-between; height: 100vh; padding: 20px;">
+        <div>
+            <div style="display: flex; align-items: center;">
+                <img src="https://img.icons8.com/?size=100&id=18053&format=png&color=000000" alt="Logo" class="logo">
+                <span class="project-name" style="color: green;">Smart Farming Solution</span>
+            </div>
+
+            <div class="nav-item">
+                <a href="/crop-recommendation"><i class="fas fa-seedling"></i>&nbsp; Crop Recommendation</a>
+            </div>
+            <div class="nav-item">
+                <a href="/fertilizer-recommendation"><i class="fas fa-flask"></i>&nbsp; Fertilizer Recommendation</a>
+            </div>
+            <div class="nav-item">
+                <a href="/inventory/login.html"><i class="fas fa-boxes"></i>&nbsp; Inventory Management</a>
+            </div>
+        </div>
+
+        <div style="font-size: 0.8rem; color: #ccc; margin-top: auto">
+            &copy; 2025 SmartFarming
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <header class="page-header">
+            <h1 style="font-size:x-large; color: green;">Crop Price Forecast</h1><br><br>
+          </header>
+        <!-- Top Gainers and Top Losers -->
+        <div class="top-section">
+            <div class="section">
+                <h2>Top Five Gainers</h2>
+                <div id="top5" class="data">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Crop</th>
+                                <th>Price (₹)</th>
+                                <th>Change (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Top Five Losers</h2>
+                <div id="bottom5" class="data">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Crop</th>
+                                <th>Price (₹)</th>
+                                <th>Change (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Twelve Months Forecast (Hidden by default) -->
+        <div id="twelveMonthsSection" class="section hidden">
+            <h2>Twelve Months Forecast</h2>
+            <div id="twelvemonths" class="data">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Price (₹)</th>
+                            <th>Change (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Current Price (Hidden by default) -->
+        <div id="currentPriceSection" class="section hidden">
+            <h2>Current Price</h2>
+            <div id="currentprice" class="data">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Price (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Commodity Section -->
+        <section>
+            <div class="section-title">Explore Commodities</div>
+
+            <div class="search-bar">
+                <select id="commoditySelect">
+                    <option value="">Select a commodity...</option>
+                </select>
+                <button onclick="redirectToCommodityPage()">Search</button>
+            </div>
+
+            <div class="grid" id="commodityGrid"></div>
+        </section>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        const commodities = [
+            "bajra", "barley", "jowar", "maize", "paddy", "ragi", "wheat",
+            "betelnut_arceanut", "black_pepper", "cardamom", "chillies_dry",
+            "coriander", "cumin", "garlic", "ginger_dry", "tamarind", "turmeric",
+            "coir_fibre", "mesta", "raw_cotton", "raw_jute", "raw_silk", "raw_wool",
+            "jasmine", "marigold", "rose", "almonds", "amla", "apple", "banana",
+            "cashew_nut", "coconut_fresh", "grapes", "guava", "jackfruit", "lemon",
+            "sweet_orange", "orange", "papaya", "pear", "pineapple", "pomengranate",
+            "sapota", "walnut", "fodder", "gaur_seed", "industrial_wood", "raw_rubber",
+            "tobacco", "castor_seed", "copra_coconut", "cotton_seed",
+            "gingelly_seed_sesamum", "groundnut_seed", "linseed", "niger_seed",
+            "rape_mustard_seed", "safflower_kardi_seed", "soyabean", "sunflower",
+            "betel_leaves", "coffee", "honey", "sugarcane", "tea", "arhar", "gram",
+            "masur", "moong", "peas_chawali", "rajma", "urad", "cotton_yarn",
+            "woollen_yarn", "beans", "bittergourd", "bottlegourd", "brinjal", "cabbage",
+            "carrot", "cauliflower", "cucumber", "drumstick", "gingerfresh",
+            "ladyfinger", "onion", "peasgreen", "pointedgourd", "potato", "pumpkin",
+            "radish", "sweetpotato", "tapioca", "tomato"
+        ];
+
+        const grid = document.getElementById("commodityGrid");
+        const select = document.getElementById("commoditySelect");
+
+        commodities.forEach(name => {
+            const card = document.createElement("a");
+            card.href = `commodity.html?name=${name}`;
+            card.className = "card";
+            card.innerHTML = `<span>${name.replace(/_/g, ' ')}</span>`;
+            grid.appendChild(card);
+
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name.replace(/_/g, ' ');
+            select.appendChild(option);
+        });
+
+        function redirectToCommodityPage() {
+            const selected = document.getElementById('commoditySelect').value;
+            if (selected) {
+                window.location.href = `commodity.html?name=${selected}`;
+            } else {
+                alert('Please select a commodity from the dropdown.');
+            }
+        }
+    </script>
+
+    <script>
+        async function fetchData() {
+            try {
+                const top5Response = await fetch('/api/top5');
+                const top5Data = await top5Response.json();
+                const top5TableBody = top5Data.map(crop => `
+                    <tr>
+                        <td>${crop[0]}</td>
+                        <td>₹${crop[1]}</td>
+                        <td class="valign-wrapper">
+                            ${crop[2]}% 
+                            <img src="/static/${crop[2] >= 0 ? "/images/gain-icon.png" : "/images/loss-icon.png"}" height="30" width="15">
+                        </td>
+                    </tr>
+                `).join('');
+                document.querySelector('#top5 tbody').innerHTML = top5TableBody;
+
+                const bottom5Response = await fetch('/api/bottom5');
+                const bottom5Data = await bottom5Response.json();
+                const bottom5TableBody = bottom5Data.map(crop => `
+                    <tr>
+                        <td>${crop[0]}</td>
+                        <td>₹${crop[1]}</td>
+                        <td class="valign-wrapper">
+                            ${crop[2]}% 
+                            <img src="/static/${crop[2] >= 0 ? "/images/gain-icon.png" : "/images/loss-icon.png"}" height="30" width="15">
+                        </td>
+                    </tr>
+                `).join('');
+                document.querySelector('#bottom5 tbody').innerHTML = bottom5TableBody;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        fetchData();
+    </script>
+
+</body>
+</html>

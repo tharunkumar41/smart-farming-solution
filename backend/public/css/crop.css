@@ -1,0 +1,111 @@
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 220px;
+    background-color: #f4faf4;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .sidebar h2 {
+    font-size: 20px;
+    color: #2e7d32;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .sidebar h2 i {
+    margin-right: 10px;
+  }
+  
+  .sidebar a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #2e7d32;
+    font-size: 16px;
+    margin: 10px 0;
+    transition: color 0.3s;
+  }
+  
+  .sidebar a i {
+    margin-right: 10px;
+  }
+  
+  .sidebar a:hover {
+    color: #4CAF50;
+  }
+  
+  /* Container */
+  .container {
+    margin-left: 240px; /* matches sidebar width */
+    padding: 40px;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f9fdf9;
+    min-height: 100vh;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    
+  }
+  
+  .container h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #2e7d32;
+    font-size: 24px;
+  }
+  
+  /* Form Styling */
+  form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  form label {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  form input[type="number"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  
+  form input[type="number"]:focus {
+    border-color: #4CAF50;
+    outline: none;
+  }
+  
+  button[type="submit"] {
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #43a047;
+  }
+  
+  h3 {
+    margin-top: 20px;
+    color: #2e7d32;
+    font-weight: 500;
+  }
+  

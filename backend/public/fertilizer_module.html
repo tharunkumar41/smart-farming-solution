@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fertilizer Recommendation</title>
+    <link rel="stylesheet" href="css/fertilizer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar">
+            <h2><i class="fas fa-flask"></i>Fertilizer Recommendation</h2>
+            <a href="/"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="/crop-recommendation"><i class="fas fa-seedling"></i> Crop Recommendation</a>
+            <a href="/inventory/login.html"><i class="fas fa-boxes"></i> Inventory Management</a>
+        </div>
+        <div class="nav-links">
+            <div class="nav-item"><a href="/"><i class="fas fa-home"></i> Dashboard</a></div>
+            <div class="nav-item"><a href="/crop-recommendation"><i class="fas fa-seedling"></i> Crop Recommendation</a></div>
+            <div class="nav-item"><a href="/inventory/login.html"><i class="fas fa-boxes"></i> Inventory</a></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Fertilizer Recommendation</h2>
+        <form id="fertilizerForm">
+            <label>Soil Type (0 = Sandy, 1 = Loamy, ...):</label>
+            <input type="number" name="soilType" required>
+
+            <label>Crop Type (0 = Maize, 1 = Sugarcane, ...):</label>
+            <input type="number" name="cropType" required>
+
+            <label>Nitrogen (N):</label>
+            <input type="number" name="nitrogen" required>
+
+            <label>Phosphorous (P):</label>
+            <input type="number" name="phosphorous" required>
+
+            <label>Potassium (K):</label>
+            <input type="number" name="potassium" required>
+
+            <button type="submit">Predict Fertilizer</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById("fertilizerForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const payload = {};
+            for (const [key, value] of formData.entries()) {
+                payload[key] = Number(value);
+            }
+
+            const res = await fetch("/predict-fertilizer", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            document.getElementById("result").textContent = data.fertilizer 
+                ? `Recommended Fertilizer: ${data.fertilizer}` 
+                : `Error: ${data.error || "Unknown"}`;
+        });
+    </script>
+</body>
+</html>
