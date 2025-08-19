@@ -50,12 +50,20 @@ PORT=3000
 # Running the Project
 
 1. Run the Flask backend
+   
     cd backend/ml_models
+   
     python ml_api.py
-2. Run the Node.js Server
+   
+3. Run the Node.js Server
+   
     cd backend
+   
     node server.js
-3. For Flutter frontend
+   
+5. For Flutter frontend
+   
     cd smart_farm
+   
     flutter run
 
