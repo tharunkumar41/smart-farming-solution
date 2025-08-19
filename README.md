@@ -5,7 +5,7 @@ This project uses:
 - **Node.js** → for backend APIs  
 - **Flutter** → for mobile app frontend  
 - **MongoDB Atlas** → for database
-- 
+  
 # Prerequisites
 1) Python 3.8+.
 2) Node.js (v16 or higher) and npm.
